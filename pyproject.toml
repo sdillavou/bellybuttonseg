@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bellybuttonseg"
+version = "0.0.15"
+authors = [
+  { name="Sam Dillavou", email="sam.dillavou@gmail.com" },
+  { name="Jesse Hanlan", email="jhanlan@sas.upenn.edu " },
+]
+
+
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "opencv_contrib_python==4.5.5.64",
+    "scipy",
+    "scikit-image",
+    "pillow",
+    "requests"
+]
+
+description = "An easy-to-use image segmentation package"
+readme = "README.md"
+license = {text="MIT License"}
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+
+[project.urls]
+"Homepage" = "https://github.com/sdillavou/bellybuttonseg"
+"Bug Tracker" = "https://github.com/sdillavou/bellybuttonseg/issues"
+
+[tool.setuptools]
+# ...
+# By default, include-package-data is true in pyproject.toml, so you do
+# NOT have to specify this line.
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
