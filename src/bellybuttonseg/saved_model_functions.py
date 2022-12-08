@@ -140,9 +140,9 @@ def SaveMatrix(BB_output_folder,name,image_dict,images_to_save):
 def CreateModel(filepath,dt_string,num_epochs,param,outputfilename,train_gen=None,test_gen=None,chkpt_filepath = None):    
     
     #Create model
-    S = param['S_half']*2+1
+    S = param['s_half']*2+1
     img_shapes = [S,S,param['scales']*param['dim3']]
-    modelBB = generate_network(img_shapes,model_num=param['HP_network_num']) 
+    modelBB = generate_network(img_shapes,model_num=param['neural_network_id']) 
     
     BB_weight_filename = outputfilename+'/networkweights.ckpt'
     

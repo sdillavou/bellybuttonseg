@@ -6,14 +6,14 @@ from tensorflow.keras import layers, Input, Model
 
 def model_S_half_minimum(model_num):
     
-    if model_num == 7:
+    if model_num == 1:
         return 9
     else:
         raise Exception('Model Number Not Recognized.')
         
 
 # Create a keras sequential NN that will train using the input train_gen (training data generator). 
-def generate_network(input_shape,model_num=7):
+def generate_network(input_shape,model_num=1):
     
     clear_session()
 
@@ -25,7 +25,7 @@ def generate_network(input_shape,model_num=7):
     if not input_shape[0]>= 2*model_S_half_minimum(model_num):
         raise Exception('Model '+str(model_num)+' requires S_half >= ',str(model_S_half_minimum(model_num)),'.')
     
-    if model_num == 7:
+    if model_num == 1:
 
         inputs = Input(shape=input_shape, name="img")
         x = layers.Conv2D(64, 3, activation="relu")(inputs)

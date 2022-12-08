@@ -43,6 +43,8 @@ def save_parameters(filename,keys,vals):
     with open(filename+'.txt', 'w') as configfile:
           config.write(configfile)
             
+
+# Load parameters from a filename. Any missing values from param_types will be filled with default values.
 def load_parameters(filename,param_types):
     config = configparser.ConfigParser()
     config.read(filename+'.txt')
@@ -50,25 +52,35 @@ def load_parameters(filename,param_types):
     keys = list(param_types.keys())
     values = list(param_types.values())
     
-    out = [0 for _ in keys]
+    out = [None for _ in keys]
     keys2 = [k.lower() for k in keys]
 
+    # load value from file
     for key in config['Parameters']: 
         if key.lower() in keys2:
             out[keys2.index(key.lower())]=config['Parameters'][key.lower()]
     
     param = LoadConverter(out,values)
     param = dict(zip(keys,param))
+    
+    # add default values if not included
+    param2 = create_default_params()
+    
+
+    for k in param2.keys():
+        if (k in param) and param[k] is None:
+            param[k] = param2[k]
 
     return param
     
     
     
 #Convert array of parameters formatted as strings into array of parameters formatted according to param_var_types
-def LoadConverter(param_string,param_var_types):
-    for ind in range(len(param_string)):
-        param_string[ind] = param_var_types[ind](param_string[ind])
-    return param_string
+def LoadConverter(param_array,param_var_types):
+    for ind in range(len(param_array)):
+        if not param_array[ind] is None:
+            param_array[ind] = param_var_types[ind](param_array[ind])
+    return param_array
 
     
 def load_image(filepath, binarize = False, integerize = False, RGB_to_gray = False, segment = False):
@@ -275,11 +287,31 @@ def distance_maker(mask):
     return dist
 
 
+# create complete parameter dict including rarely-edited values
 def create_default_params():
+
+    param = create_sparse_default_params()
+
+   
+    param['neural_network_id'] = 1; # For a list of what networks these numbers create, see readme.
+   
+    # optional values for spatially weighting pixels near borders of particles/images
+    param['border_radius'] = 1 # neighborhood of relevance for weighting
+    param['particle_border_weighting'] =  1# weight multiplier for pixels within border_radius of a particle border
+    param['two_particle_border_weighting'] =1 # weight multiplier for pixels within border_radius of two particles
+    param['image_border_weighting'] = 1 # weight multiplier for pixels within border_radius of an image edge
+
+    
+    return param
+
+
+
+# create parameter dict without rarely-edited values
+def create_sparse_default_params():
 
     param = {};
 
-    param['S_half'] = 12# int, defines size of input image to NN: size = (2[S_half]+1 square). 12 is reccommended.
+    param['s_half'] = 12# int, defines size of input image to NN: size = (2[S_half]+1 square). 12 is reccommended.
 
     param['scales'] = 4 # number of scaled images (int, 1 is just regular without scaling)
     param['scalefactor'] = 2 # scale multiplier (int)
@@ -293,8 +325,7 @@ def create_default_params():
     #True/False
     param['images_to_grayscale'] = 1; #convert images to grayscale (if images already one channel, this has no effect.)
 
-    param['HP_network_num'] = 7; # For a list of what networks these numbers create, see readme.
-    param['HP_train_epochs'] = 3; # how many epochs to train
+    param['train_epochs'] = 3; # how many epochs to train
 
     # (total AOI area)*fraction = training samples 
     # These are automatically adjusted such that half come from each class, meaning some may be multi-counted.
@@ -305,12 +336,6 @@ def create_default_params():
     param['dist_max'] = 10;  
 
     param['track_outies']  = 0 # invert inputs and track 'outies' instead (works for small, separated particles)
-
-    # optional values for spatially weighting pixels near borders of particles/images
-    param['HP_neighborhood_radius'] = 1 # neighborhood of relevance for weighting
-    param['HP_particle_border_mult'] =  1# weight multiplier for pixels within HP_neighborhood of a particle border
-    param['HP_two_particle_mult'] =1 # weight multiplier for pixels within HP_neighborhood of two particles
-    param['HP_img_edge_mult'] = 1 # weight multiplier for pixels within HP_neighborhood of an image edge
 
     # Specify the type(s) of final images to be saved, True(1) or False(0)
     param['output_segmented']=1
