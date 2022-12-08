@@ -33,7 +33,7 @@ if len(physical_devices):
 ####### END OF HEADER #################################################################
 
 
-param_types={'S_half':int, 'scales':int, 'scalefactor':int, 'HP_neighborhood_radius':float, 'HP_particle_border_mult':float, 'HP_two_particle_mult':float, 'HP_img_edge_mult':float, 'batch_size':int, 'rotations':int, 'flips':int, 'images_to_grayscale':int, 'HP_network_num':int, 'HP_train_epochs':int, 'fraction':float, 'output_segmented':int, 'output_binarized':int, 'output_dist':int, 'output_classprob':int, 'output_markers':int, 'save_to_png':int, 'save_to_npy':int,'track_outies':int,'dim3':int, 'dist_max':int}
+param_types={'s_half':int, 'scales':int, 'scalefactor':int, 'particle_border_radius':float, 'particle_border_weighting':float, 'two_particle_border_weighting':float, 'image_border_weighting':float, 'batch_size':int, 'rotations':int, 'flips':int, 'images_to_grayscale':int, 'neural_network_id':int, 'train_epochs':int, 'fraction':float, 'output_segmented':int, 'output_binarized':int, 'output_dist':int, 'output_classprob':int, 'output_markers':int, 'save_to_png':int, 'save_to_npy':int,'track_outies':int,'dim3':int, 'dist_max':int}
 
 norms_types = {'img_min':float,'img_max':float}
 
@@ -80,17 +80,17 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
         
         
         param = load_parameters(parameter_filename,param_types) # load old parameters
-        old_epochs = param['HP_train_epochs']
+        old_epochs = param['train_epochs']
         
         #Adjust loaded (old) parameters to match any input (new) parameters
         for key,value in param_input.items():
             param[key] = value
             
-        num_epochs = param_input['HP_train_epochs'] # must have specified this value in new input
+        num_epochs = param_input['train_epochs'] # must have specified this value in new input
 
         norms = load_parameters(normalization_filename,norms_types)
         
-        param['HP_train_epochs'] += old_epochs # store the TOTAL number of epochs trained
+        param['train_epochs'] += old_epochs # store the TOTAL number of epochs trained
     
         if num_epochs>0:
             
@@ -130,10 +130,10 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
             raise Exception('Batch number must be divisible by 4 if doing rotations, 2 if flipping, and 8 if both.')
 
         # input window size must be big enough for selected network
-        if not param['S_half'] >= model_S_half_minimum(param['HP_network_num']):
-            raise Exception('HP network model '+str(param['HP_network_num'])+ ' requires S_half >= '+str(model_S_half_minimum(param['HP_network_num']))+'.')
+        if not param['s_half'] >= model_S_half_minimum(param['neural_network_id']):
+            raise Exception('HP network model '+str(param['neural_network_id'])+ ' requires S_half >= '+str(model_S_half_minimum(param['neural_network_id']))+'.')
         
-        num_epochs = param['HP_train_epochs']
+        num_epochs = param['train_epochs']
         
         
     if num_epochs>0:
@@ -166,7 +166,12 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
         train_genHP.normalize_images(norms['img_max'],norms['img_min'])
         if include_test_in_training:
             test_genHP.normalize_images(norms['img_max'],norms['img_min'])
-            
+          
+
+        print('[BB] Training Neural Network')
+        if not include_test_in_training:
+            print('[BB] -- Excluding test images from .fit function. Test set results available at end.')
+    
     elif num_epochs==0:
         print('Number of epochs = 0, entering predict only mode')
         train_genHP = None
@@ -183,11 +188,7 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
 
     
     #train_genHP.plot_items(5)
-    
-    print('[BB] Training Neural Network')
-    if not include_test_in_training:
-        print('[BB] -- Excluding test images from .fit function. Test set results available at end.')
-
+  
     modelHP = CreateModel(filepath,dt_string,num_epochs,param,outputfilename,train_gen=train_genHP,test_gen=test_genHP,chkpt_filepath=HP_weight_filename)
     
     # garbage collect
@@ -231,7 +232,7 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
                 train_SEG += SEG0
                 train_areas += areas0
                 
-                print('[BB] -- Train Image '+str(index)+': '+img_names[0]+' -- SEG: '+str(np.round(np.mean(SEG0),round_out)))
+                print('[BB] -- Generated Train Image Result '+str(index)+': '+img_names[0]+' -- SEG: '+str(np.round(np.mean(SEG0),round_out)))
 
                     
                 index+=1
@@ -256,7 +257,7 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
                 test_SEG += SEG0
                 test_areas += areas0
                
-                print('[BB] -- Test Image '+str(index)+': '+img_names[0]+' -- SEG: '+str(np.round(np.mean(SEG0),round_out)))
+                print('[BB] -- Generated Test Image Result '+str(index)+': '+img_names[0]+' -- SEG: '+str(np.round(np.mean(SEG0),round_out)))
 
                 index+=1
 
@@ -313,27 +314,27 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
 
     if num_epochs==0 or not (predict_path is None):
         if os.path.isdir(HP_output_folder)==False:
-            print('Original training never made predictions, creating prediction folder now...')
+            print('[BB] Original training never made predictions, creating prediction folder now...')
             os.mkdir(HP_output_folder)
 
         # generator for prediction data
         if predict_path is None or predict_path == 'predict_images':
             subfolder = 'predict_images'
-            print('Predicting on images in predictions folder...')
+            print('[BB] Predicting on images in predictions folder...')
             true_pred = None
             true_pred_seg = None
             train_test_predict = 2
             prestr = '';
         elif predict_path == 'test_images':
             subfolder = 'test_images'
-            print('Predicting on images in the test folder...')
+            print('[BB] Predicting on images in the test folder...')
             true_pred = np.zeros((2,2))
             true_pred_seg = np.zeros((2,2))
             train_test_predict = 1
             prestr = 'test_'
         elif predict_path == 'train_images':
             subfolder = 'train_images'
-            print('Predicting on images in the train folder...')
+            print('[BB] Predicting on images in the train folder...')
             true_pred = np.zeros((2,2))
             true_pred_seg = np.zeros((2,2))
             train_test_predict = 1
@@ -350,6 +351,9 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
                 all_genHP.normalize_images(norms['img_max'],norms['img_min'])
 
                 SEG0, areas0 = Predict(param, modelHP, all_genHP, HP_output_folder, img_names,true_pred = true_pred, true_pred_seg = true_pred_seg ,seg_masks = seg_masks)
+                
+                print('[BB] -- Generated Prediction Image Result '+str(index)+': '+img_names[0])
+
                 index+=1
                 del all_genHP
                 gc.collect()

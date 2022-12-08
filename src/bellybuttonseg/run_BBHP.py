@@ -29,7 +29,7 @@ filepath = BBfolder + 'UseableDatasets/printed_foam/'
 # (2) DEFINE ALL RELEVANT PARAMETERS FOR TRAINING
 #######################################################################################
 
-param['S_half'] = 12# int, defines size of input image to NN: size = (2[S_half]+1 square). 12 is reccommended, 9 is minimum
+param['s_half'] = 12# int, defines size of input image to NN: size = (2[S_half]+1 square). 12 is reccommended, 9 is minimum
 
 param['scales'] = 2 # number of scaled images (int, 1 is just regular without scaling)
 param['scalefactor'] = 2 # scale multiplier (int)
@@ -41,7 +41,7 @@ param['flips'] = True # flip images in training to multiply data by 2
 
 param['images_to_grayscale'] = True; #convert images to grayscale (if images already one channel, this has no effect.)
 
-param['HP_train_epochs'] = 3; # how many epochs to train
+param['train_epochs'] = 3; # how many epochs to train
 
 # (total AOI area)*fraction = training samples 
 # These are automatically adjusted such that half come from each class, meaning some may be multi-counted.
@@ -50,7 +50,7 @@ param['fraction'] = 1
 
 
 
-param['HP_network_num'] = 7; # For a list of what networks these numbers create, see readme.
+param['neural_network_id'] = 1; # For a list of what networks these numbers create, see readme.
 
 
 

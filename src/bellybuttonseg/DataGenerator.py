@@ -36,7 +36,7 @@ def CreateGenerator(filepath, subfolder, param, want=None, count=-1, train_test_
         raise Exception('train_test_predict parameter must be 0 (training), 1 (testing), or 2 (predicting).')
 
     # create generator object
-    dataGenerator = HPinputGenerator(S_half = param['S_half'], \
+    dataGenerator = HPinputGenerator(S_half = param['s_half'], \
                                       batch_size = param['batch_size'],\
                                       scales=param['scales'], \
                                       scalefactor=param['scalefactor'], \
@@ -94,7 +94,7 @@ def CreateGenerator(filepath, subfolder, param, want=None, count=-1, train_test_
     
     # create HP inputs
     for k,img in enumerate(imgs):
-        dataGenerator.add_ID_img(img, mask=masks[k], AOI=AOIs[k], neighborhood_radius=param['HP_neighborhood_radius'], particle_border_mult=param['HP_particle_border_mult'], two_particle_mult=param['HP_two_particle_mult'],  img_edge_mult = param['HP_img_edge_mult'])                   
+        dataGenerator.add_ID_img(img, mask=masks[k], AOI=AOIs[k], neighborhood_radius=param['particle_border_radius'], particle_border_mult=param['particle_border_weighting'], two_particle_mult=param['two_particle_border_weighting'],  img_edge_mult = param['image_border_weighting'])                   
 
     return dataGenerator, img_names, copy.deepcopy(masks)
 

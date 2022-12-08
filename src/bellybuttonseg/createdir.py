@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 import io,os,sys,shutil
 sys.path.append(os.path.dirname(__file__))
-from load_save_helpers import create_default_params, save_parameters, load_parameters
+from load_save_helpers import create_sparse_default_params, save_parameters, load_parameters
 from BBHP_function import param_types, BBHP
 from PIL import Image
 import requests 
@@ -28,11 +28,11 @@ def runBB(train=True, predict=False):
 
     if not (dt_string is None):
         del param['dim3']
-        del param['HP_network_num']
-        del param['S_half']
+        del param['neural_network_id']
+        del param['s_half']
     
     if not train:
-        param['HP_train_epochs'] = 0
+        param['train_epochs'] = 0
 
     if predict:
         predict_path = 'predict_images'
@@ -84,7 +84,7 @@ def createdir(example=0):
     os.mkdir(full_filename+'/masks')
     os.mkdir(full_filename+'/areas_of_interest')
 
-    param = create_default_params();
+    param = create_sparse_default_params();
 
 
 
