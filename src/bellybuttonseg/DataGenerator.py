@@ -94,7 +94,7 @@ def CreateGenerator(filepath, subfolder, param, want=None, count=-1, train_test_
     
     # create HP inputs
     for k,img in enumerate(imgs):
-        dataGenerator.add_ID_img(img, mask=masks[k], AOI=AOIs[k], neighborhood_radius=param['particle_border_radius'], particle_border_mult=param['particle_border_weighting'], two_particle_mult=param['two_particle_border_weighting'],  img_edge_mult = param['image_border_weighting'])                   
+        dataGenerator.add_ID_img(img, mask=masks[k], AOI=AOIs[k], neighborhood_radius=param['border_radius'], particle_border_mult=param['particle_border_weighting'], two_particle_mult=param['two_particle_border_weighting'],  img_edge_mult = param['image_border_weighting'])                   
 
     return dataGenerator, img_names, copy.deepcopy(masks)
 

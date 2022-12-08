@@ -135,7 +135,7 @@ All of these options are true (1) or false (0). Any combination may be selected,
 
 #### Parameters that probably do not need adjusting:
 
-##### Input Width (S_half):
+##### Input Width (s_half):
 Size of smallest window fed into network. S_half=12 is default, which means the window is $2*S_{half}+1 = 25$ pixels wide. S_half of 9 and above will run with no errors.
 
 ##### Batch Size:

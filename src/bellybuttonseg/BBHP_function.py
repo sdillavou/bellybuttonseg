@@ -33,7 +33,7 @@ if len(physical_devices):
 ####### END OF HEADER #################################################################
 
 
-param_types={'s_half':int, 'scales':int, 'scalefactor':int, 'particle_border_radius':float, 'particle_border_weighting':float, 'two_particle_border_weighting':float, 'image_border_weighting':float, 'batch_size':int, 'rotations':int, 'flips':int, 'images_to_grayscale':int, 'neural_network_id':int, 'train_epochs':int, 'fraction':float, 'output_segmented':int, 'output_binarized':int, 'output_dist':int, 'output_classprob':int, 'output_markers':int, 'save_to_png':int, 'save_to_npy':int,'track_outies':int,'dim3':int, 'dist_max':int}
+param_types={'s_half':int, 'scales':int, 'scalefactor':int, 'border_radius':float, 'particle_border_weighting':float, 'two_particle_border_weighting':float, 'image_border_weighting':float, 'batch_size':int, 'rotations':int, 'flips':int, 'images_to_grayscale':int, 'neural_network_id':int, 'train_epochs':int, 'fraction':float, 'output_segmented':int, 'output_binarized':int, 'output_dist':int, 'output_classprob':int, 'output_markers':int, 'save_to_png':int, 'save_to_npy':int,'track_outies':int,'dim3':int, 'dist_max':int}
 
 norms_types = {'img_min':float,'img_max':float}
 

@@ -296,10 +296,10 @@ def create_default_params():
     param['neural_network_id'] = 1; # For a list of what networks these numbers create, see readme.
    
     # optional values for spatially weighting pixels near borders of particles/images
-    param['particle_border_radius'] = 1 # neighborhood of relevance for weighting
-    param['particle_border_weighting'] =  1# weight multiplier for pixels within particle_border_radius of a particle border
-    param['two_particle_border_weighting'] =1 # weight multiplier for pixels within particle_border_radius of two particles
-    param['image_border_weighting'] = 1 # weight multiplier for pixels within particle_border_radius of an image edge
+    param['border_radius'] = 1 # neighborhood of relevance for weighting
+    param['particle_border_weighting'] =  1# weight multiplier for pixels within border_radius of a particle border
+    param['two_particle_border_weighting'] =1 # weight multiplier for pixels within border_radius of two particles
+    param['image_border_weighting'] = 1 # weight multiplier for pixels within border_radius of an image edge
 
     
     return param
