@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: bellybuttonseg
-Version: 0.0.15
+Version: 0.0.16
 Summary: An easy-to-use image segmentation package
 Author-email: Sam Dillavou <sam.dillavou@gmail.com>, Jesse Hanlan <jhanlan@sas.upenn.edu>
 License: MIT License
@@ -79,7 +79,7 @@ python3 -m bellybuttonseg.newproject
 ```
 When the code line above is run, you will be prompted to select a location and then prompted to enter a name for the base folder of this project (`[INPUT] Enter folder name for new project:`), which you can always rename later.
 
- - Move your images, masks, and (optionally) areas of interest into the appropriate folders created in this new directory.
+ - Move your images, masks, and (optionally) areas of interest into the appropriate folders created in this new directory. Note that masks and area of interest files must have identical base names to the images they correspond to (image image1.png and mask and image1.txt is allowed). 
 
  - Edit the parameters inside the parameters.txt file if desired (see above section for details).
 
