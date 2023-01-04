@@ -339,7 +339,7 @@ class BBinputGenerator(tf.keras.utils.Sequence):
     # returns max and minimum value of all images
     def get_img_range(self):
         maxval,minval = np.max(self.get_img(0)),np.min(self.get_img(0))
-        for idx in range(1,np.shape(self.imgs)[0]):
+        for idx in range(1,len(self.imgs)):
             maxval = np.max([maxval,np.max(self.get_img(idx))])
             minval = np.min([minval,np.min(self.get_img(idx))])
         
