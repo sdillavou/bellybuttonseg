@@ -66,7 +66,7 @@ When the code line above is run, you will be prompted to select a location and t
 
  - Move your images, masks, and (optionally) areas of interest into the appropriate folders created in this new directory. Note that masks and area of interest files must have identical base names to the images they correspond to (image image1.png and mask and image1.txt is allowed). 
 
- - Edit the parameters inside the parameters.txt file if desired (see above section for details).
+ - Edit the parameters inside the parameters.txt file if desired (see section below for details).
 
  - Train Bellybutton on your data. You will be prompted to select your project folder after running the below command.
 
@@ -87,7 +87,7 @@ Alternatively, do the entire training and prediction process in one step with
 ```
 python3 -m bellybuttonseg.trainandpredict 
 ```
-and select the base folder (new output folder will be created).
+and select the base folder (a new output folder will be created).
 
 
 Enjoy!
@@ -99,7 +99,7 @@ There are a handful of hyper-parameters that adjust how Bellybutton runs. Howeve
 
 #### Flips, Rotations:
 ##### TL;DR: duplicates training data by flipping and rotating - useful to prevent overfitting.
-During training by default, Bellybutton rotates and flips the input images to produce additional training data. If the system in question has these symmetries (i.e. if the objects being identified will rotate, or has a shape symmetric to flips like a circle or oval), then including these data augmentations may reduce overfitting.
+During training by default, Bellybutton rotates and flips the input images to produce additional training data. If the system in question has these symmetries (i.e. if the objects being identified will rotate, or has a shape symmetric to flips like a circle or oval), then including these data augmentations may reduce overfitting. If the objects you are segmenting do not have these symmetries (e.g. they are always upright teardrop shapes), then these augmentations may make the problem harder to solve than is needed.
 
 #### Scales, Scalefactor:
 ##### TL;DR: Number of scales and zoom factor for each that is fed into network - make big enough to see important features of data
