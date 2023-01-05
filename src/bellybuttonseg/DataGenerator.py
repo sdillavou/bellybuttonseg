@@ -89,7 +89,7 @@ def CreateGenerator(filepath, subfolder, param, want=None, count=-1, train_test_
     # if there are masks and track_outies flag is true, alert user and invert masks
     if param['track_outies'] and np.sum([not m is None for m in masks])>0:
         if chatter:
-            print('Inverting masks to track zero-valued pixels.')
+            print('[BB] -- Inverting masks to track zero-valued pixels.')
         masks = [1*(m == 0) if (not m is None) else None for m in masks]
     
     # create HP inputs
@@ -339,7 +339,7 @@ class BBinputGenerator(tf.keras.utils.Sequence):
     # returns max and minimum value of all images
     def get_img_range(self):
         maxval,minval = np.max(self.get_img(0)),np.min(self.get_img(0))
-        for idx in range(1,np.shape(self.imgs)[0]):
+        for idx in range(1,len(self.imgs)):
             maxval = np.max([maxval,np.max(self.get_img(idx))])
             minval = np.min([minval,np.min(self.get_img(idx))])
         

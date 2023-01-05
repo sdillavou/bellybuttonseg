@@ -60,7 +60,10 @@ def createdir(example=0):
     # if pre-loaded example, images, masks, etc will be added
     if example == 1:
         folder_name = 'PhotoelasticDisks'
-        
+       
+    elif example == 2:
+        folder_name = 'Honeycomb'
+
     elif not example == 0:
         print('[BB] Bad input, no such example #'+example+'.')
         return
@@ -84,14 +87,12 @@ def createdir(example=0):
     os.mkdir(full_filename+'/masks')
     os.mkdir(full_filename+'/areas_of_interest')
 
+
     param = create_sparse_default_params();
-
-
-
+    PEurl = "https://raw.githubusercontent.com/sdillavou/BellybuttonExampleData/main/"+folder_name+"/" #if downloading
     
     # given example must moves images, masks, aois into structure
-    if example ==1:
-        PEurl = "https://raw.githubusercontent.com/sdillavou/BellybuttonExampleData/main/PhotoelasticDisks/"
+    if example ==1: # photoelastic disks
 
         # Areas of interest
         download_image(PEurl+"areas_of_interest/test.png", full_filename+'/areas_of_interest/test_01.png')
@@ -122,6 +123,44 @@ def createdir(example=0):
         shutil.copyfile(full_filename+'/train_images/train_03.tif', full_filename+'/predict_images/whole_03.tif')
         
 
+        # uses default parameters.
+
+    
+    elif example ==2: #honeycomb
+
+        for k in range(0,851,50):
+            num = str(k)
+            while len(num)<6:
+                num = '0'+num;
+
+
+            
+            # Areas of interest
+            download_image(PEurl+"areas_of_interest/img"+num+".tif", full_filename+'/areas_of_interest/img'+num+'.tif')
+
+            if k % 200 == 0:
+                # Masks
+                download_image(PEurl+"masks/img"+num+".tif", full_filename+'/masks/img'+num+'.tif')
+
+                if k == 200 or k == 600:
+                    # Test Images
+                    download_image(PEurl+"images/img"+num+".tif", full_filename+'/test_images/img'+num+'.tif')
+                else:
+                    # Train Images
+                    download_image(PEurl+"images/img"+num+".tif", full_filename+'/train_images/img'+num+'.tif')
+                
+
+            else:
+                # Prediction Images
+                download_image(PEurl+"images/img"+num+".tif", full_filename+'/predict_images/img'+num+'.tif')
+
+        param['train_epochs'] = 1
+        param['fraction'] = 0.5
+        param['scales'] = 3
+        param['output_segmented'] = 0
+        param['output_binarized'] = 1
+        param['output_dist'] = 1
+        param['dist_max'] = 4
 
 
     save_parameters(full_filename+'/'+base_param_name,list(param.keys()),list(param.values()))

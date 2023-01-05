@@ -24,15 +24,18 @@ def convert_param_to_outputs(param):
 
 
 #Given a prediction and error functions, segment and watershed the prediction while updating the error count
-def SegmentPrediction(BBout,dist_max):
+def SegmentPrediction(BBout,param):
     '''
     inputs:
     BBout = single prediction from BBpredictions
     dist_max = parameter from the generator, max value network predicts for distance to outie
+    param = parameter object. 
     outputs:
     image_dict = dictionary containing segmented matrix and any other desired outputs
     ASSUME BACKGROUND IS 0
     '''
+
+    dist_max = param['dist_max']
     kernel = np.array(circ_region(dist_max),dtype=np.uint8)
     dist = BBout[:,:,1]
     mask = BBout[:,:,0]
@@ -42,6 +45,17 @@ def SegmentPrediction(BBout,dist_max):
     maxima = dist == maximum_filter(dist, footprint=kernel) 
     maxima = np.array(maxima*outmask, dtype=np.uint8)
     maxima[dist<dist_max/2] = 0
+
+    #Add manipulated matrices to dictionary (placeholders for the two optional ones)
+    image_dict = {}
+    image_dict['_binarized'] = outmask
+    image_dict['_classprob'] = mask
+    image_dict['_dist'] = dist
+
+    image_dict['_markers'] = mask*0
+    image_dict['_segmented'] = outmask
+
+
     
     # Old way of doing things. Obsolete.
     if False:
@@ -52,51 +66,54 @@ def SegmentPrediction(BBout,dist_max):
 
         labels = watershed(-dist, markers = markers, mask=outmask)
 
-    if True:
+    if param['output_markers'] or param['output_segmented']:
+
+
 
         # give each a unique ID
         #connectedmask = np.ubyte(np.array(cv2.filter2D(dist,-1,kernel)>=(np.sum(kernel)*(dist_max-0.5)),dtype=float))
         (_, markers, _, _) = cv2.connectedComponentsWithStats(maxima)
-
-        # watershed using these maxima, only on classprob>0.5, and using distance as rate
-        labels = watershed(-dist, markers = markers, mask=outmask)
         
-        # watershedding creates too many segments, find those that should be combined
-        S = np.shape(labels)
-        combinemat = np.zeros((np.max(labels)+1,np.max(labels)+1)) # catalog which regions should be combined
+        image_dict['_markers'] = markers
 
-        # for each pixel jump right or down, if sum of dist of both pixels is too high, these regions are the same
-        for r in range(0,S[0]-2):
-            for c in range(0,S[1]-2):
-                if labels[r,c]!=0: 
-                    if labels[r,c+1] !=0 and labels[r,c+1]!=labels[r,c]:
-                        combinemat[labels[r,c],labels[r,c+1]] += (dist[r,c]+dist[r,c+1])>(1.5*(dist_max))
-                    if labels[r+1,c] !=0 and labels[r+1,c]!=labels[r,c]:
-                        combinemat[labels[r,c],labels[r+1,c]] += (dist[r,c]+dist[r+1,c])>(1.5*(dist_max))
+        if param['output_segmented']: # only watershed if requested!
 
-        # don't know which was first
-        combinemat += np.transpose(combinemat)
+            # watershed using these maxima, only on classprob>0.5, and using distance as rate
+            labels = watershed(-dist, markers = markers, mask=outmask)
+            
+            # watershedding creates too many segments, find those that should be combined
+            S = np.shape(labels)
+            combinemat = np.zeros((np.max(labels)+1,np.max(labels)+1)) # catalog which regions should be combined
 
-        # relabel lower numbered regions with higher number if combining is needed
-        S2= np.shape(combinemat)
-        for r1 in range(1,S2[0]):
-            for r2 in range(r1+1,S2[1]):
-                if combinemat[r1,r2]: # combine these regions
-                    labels[labels==r1]=r2
-                    combinemat[r2,:] += combinemat[r1,:] # new combined region inherits all connections of merged regions
+            # for each pixel jump right or down, if sum of dist of both pixels is too high, these regions are the same
+            for r in range(0,S[0]-2):
+                for c in range(0,S[1]-2):
+                    if labels[r,c]!=0: 
+                        if labels[r,c+1] !=0 and labels[r,c+1]!=labels[r,c]:
+                            combinemat[labels[r,c],labels[r,c+1]] += (dist[r,c]+dist[r,c+1])>(1.5*(dist_max))
+                        if labels[r+1,c] !=0 and labels[r+1,c]!=labels[r,c]:
+                            combinemat[labels[r,c],labels[r+1,c]] += (dist[r,c]+dist[r+1,c])>(1.5*(dist_max))
 
-        # relabel with continuous values from 1            
-        _, labels = np.unique(labels, return_inverse=True) 
-        labels = np.array(np.reshape(labels,S),dtype='int32')
+            # don't know which was first
+            combinemat += np.transpose(combinemat)
+
+            # relabel lower numbered regions with higher number if combining is needed
+            S2= np.shape(combinemat)
+            for r1 in range(1,S2[0]):
+                for r2 in range(r1+1,S2[1]):
+                    if combinemat[r1,r2]: # combine these regions
+                        labels[labels==r1]=r2
+                        combinemat[r2,:] += combinemat[r1,:] # new combined region inherits all connections of merged regions
+
+            # relabel with continuous values from 1            
+            _, labels = np.unique(labels, return_inverse=True) 
+            labels = np.array(np.reshape(labels,S),dtype='int32')
+            
+            # store values
+            image_dict['_segmented'] = labels
 
     
-    #Add manipulated matrices to dictionary
-    image_dict = {}
-    image_dict['_binarized'] = outmask
-    image_dict['_classprob'] = mask
-    image_dict['_dist'] = dist
-    image_dict['_segmented'] = labels
-    image_dict['_markers'] = markers
+  
     
     return image_dict
     
@@ -123,9 +140,15 @@ def SegmentPrediction(BBout,dist_max):
 #Save segmented matrix as image 
 #COME BACK AND CLEAN UP THIS KEY THING ITS STUPID
 def SaveImage(BB_output_folder,name,image_dict,images_to_save,dist_max):
-    pixel_scaling = {'_binarized': 254,'_classprob': 254,'_dist': 254.0/(dist_max*1.2),'_segmented': 97,'_markers': 97}
+    pixel_scaling = {'_binarized': 250,'_classprob': 250,'_dist': 250.0/(dist_max*1.2),'_segmented': 97,'_markers': 97}
     for key in images_to_save:
-        cv2.imwrite(BB_output_folder+'/'+name[:name.index('.')]+key+'.png',np.array(image_dict[key]>0)+np.array((pixel_scaling[key]*image_dict[key]) % 255,dtype=int))
+        if key=='_dist': # ensure no high distances are shown as low values because of mod.
+            dummymat = np.array((pixel_scaling[key]*image_dict[key]),dtype=int)
+            dummymat[dummymat>250]==250
+        else:
+            dummymat = np.array((pixel_scaling[key]*image_dict[key]) % 251,dtype=int)
+
+        cv2.imwrite(BB_output_folder+'/'+name[:name.index('.')]+key+'.png',np.array(image_dict[key]>0)*4+dummymat)
 
 
 #Save segmented matrix as binary .npy           
@@ -250,7 +273,7 @@ def Predict(param, model, gen, BB_output_folder, names, true_pred = None, true_p
     areas = None; # return none if no mask present
     
     for k, BBout in enumerate(BBpredictions):
-        image_dict = SegmentPrediction(BBout,dist_max)
+        image_dict = SegmentPrediction(BBout,param)
         if (true_pred is not None) and (true_pred_seg is not None):
             mask = gen.get_masks(k)
             AOI = gen.get_AOI(k)
