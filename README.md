@@ -9,22 +9,19 @@ Using the package requires no writing code; by editing a text file, users can ed
 
 ### Install Bellybutton from command line / terminal
 
-Create a new python environment, here we named it 'bellybuttonenv' ([e.g. using anaconda](shorturl.at/elRTZ))
+Create a new Python environment, then activate it. Here we named it 'bellybuttonenv' and used [Anaconda](shorturl.at/elRTZ).
 
-``` conda create --name bellybuttonenv ```
+```
+conda create --name bellybuttonenv
+conda activate bellybuttonenv
+```
 
-Activate this environment (here using anaconda)
+Download Bellybutton package (pip will install most required packages automatically). Manually install TensorFlow (or appropriate variant for your machine).
 
-``` conda activate bellybuttonenv ```
-
-Download Bellybutton package (pip will install most required packages automatically)
-
-``` pip install bellybuttonseg ```
-
-Install tensorflow 
-
-``` pip install tensorflow ```
-
+```
+pip install bellybuttonseg
+pip install tensorflow 
+```
 
 ### Run Bellybutton on an example dataset
 
@@ -54,6 +51,17 @@ You may instead train a new network and then segment the images in predict_image
 ```
 python3 -m bellybuttonseg.trainandpredict 
 ```
+
+A short list of easy-to-use example datasets:
+
+
+###### PhotoelasticDisks
+Connected disks of plastic that visualize internal forces in the material. Includes 3 images of varying stress, and uses regions within each image for training and testing. 
+```python3 -m bellybuttonseg.example1 ```
+
+###### Honeycomb
+A hexagonal pattern of clear (also photoelastic) plastic slowly being fractured, changing its structure. In this example there is only one 'region,' the material, but its shape is the desired output. Therefore the default outputs are a binarized innie vs outie image and also distance from the edge of the material.
+``` python3 -m bellybuttonseg.example2 ```
 
 
 ### Run Bellybutton on your own dataset
@@ -89,6 +97,11 @@ python3 -m bellybuttonseg.trainandpredict
 ```
 and select the base folder (a new output folder will be created).
 
+###### Adding Epochs
+
+After training, you can add more epochs by running ``` python3 -m bellybuttonseg.train ``` (or ```.trainandpredict```) and selecting the output folder of the already trained network. This action will load the trained network and begin training from where it left off, training for the number of epochs specified in the base_parameters.txt file. A new output file will be created with the old output file's name, plus a new date and time. You can repeat this as many times as you'd like, but the file names will get a little long :)
+
+Note that certain parameters should not be changed, namely s_half, scales, scalefactor, images_to_grayscale, neural_network_id, or track_outies, as these either change the structure of the network, or modify the data intake in a way that makes the previous training incorrect. Changing these will result in an error.
 
 Enjoy!
 
@@ -107,16 +120,16 @@ When the data are fed into the neural network, a 25x25 pixel neighborhood center
 
 #### Max Distance:
 ##### TL;DR: minimum radius of segmented particles or 10, whichever is smaller.
-As part of Bellybutton's algorithm, it is asked to predict distance of each pixel inside a particle to the nearest pixel not in that particle. This helps eventually segment particles in contact. This distance is capped at [Max Distance]. This value can be thought of as a minimum radius for particles, although Bellybutton may capture some particles below this radius. Good practice is to make this value a few pixels smaller than the minimum radius of the smallest desired regions. We find a value any higher than 10 pixels is unnecessary, as the values closest to the edges are most important, and values of 5 or higher will run without error.
+As part of Bellybutton's algorithm, it is asked to predict distance of each pixel inside a particle to the nearest pixel not in that particle. This helps eventually segment particles in contact. This distance is capped at [Max Distance]. This value can be thought of as a minimum radius for particles, although Bellybutton may capture some particles below this radius. Good practice is to make this value a few pixels smaller than the minimum radius of the smallest desired regions. We find a value any higher than 10 pixels is unnecessary, as the values closest to the edges are most important. Note that Bellybutton is not designed for regions smaller than a handful of pixels across, but may still perform well in some cases. Typically, if your desired regions are too small or thin, Bellybutton will subdivide what should be continuous regions. In this case, for your mask consider using these regions plus an added border to give them enough size.
 
 #### Fraction, Epochs:
 ##### TL;DR: fraction of training pixels used, and number of times network is exposed to each - product of the two is typically the important parameter 
-Often, not all of the user-generated data is necessary to train the network. Systems with thousands of particles in a single image may not even require a full image for training. Users should select their data to include as many lighting, rotation, focus, shape, and size scenarios as possible, but this may result in a massive number of pixels in the training set. The Fraction parameter indicates what fraction (0 to 1) of pixels identified as training data should be used to train the network. That data is then run through the network the number of times specified by Epochs. We find that in many systems, the important parameter is [Fraction] * [Epochs], and that provided Fraction is not too low (typically above 5-10\%, to give the network exposure to most situations), the trade-off between these two numbers is minimal. Users should train their networks until the test set error reaches a plateau, which will likely happen in fewer Epochs when more training data is used.
+Often, not all of the user-generated data is necessary to train the network. Systems with thousands of particles in a single image may not even require a full image for training. Users should select their data to include as many lighting, rotation, focus, shape, and size scenarios as possible, but this may result in a massive number of pixels in the training set. The Fraction parameter indicates what fraction (0 to 1) of pixels identified as training data should be used to train the network. That data is then run through the network the number of times specified by Epochs. We find that in many systems, the important parameter is [Fraction] * [Epochs], and that, provided the Fraction is not too low (typically above 5-10\%, to give the network exposure to most situations), the trade-off between these two numbers is minimal. Users should train their networks until the test set error reaches a plateau, which will likely happen in fewer Epochs when more training data is used.
 
 
 #### Output and Save_To:
 ##### TL;DR: Save_To is what file types are saved - images (png), data (npy). Outputs are what is saved (segmented regions, classification probability, etc)
-All of these options are true (1) or false (0). Any combination may be selected, including all or none of them. Output types are segmented regions (default output), distance to outside a particle (used for distinguishing touching regions), probability that bellybutton thinks a pixel is inside vs outside a particle, a binarized version of that probability, and markers, which are the starting points for the watershedding algorithm.
+All of these options are true (1) or false (0). Any combination may be selected, including all or none of them. Output types are segmented regions (default output), distance to outside a particle (used for distinguishing touching regions), probability that bellybutton thinks a pixel is inside vs outside a particle, a binarized version of that probability, and markers, which are the starting points for the watershedding algorithm. Note that if output_segmented is 0, Bellybutton will not go through the segmentation process, and outputs will be calculated based solely on the binary inside-or-outside of a region.
 
 #### Parameters that probably do not need adjusting:
 

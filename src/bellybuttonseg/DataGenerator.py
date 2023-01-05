@@ -89,7 +89,7 @@ def CreateGenerator(filepath, subfolder, param, want=None, count=-1, train_test_
     # if there are masks and track_outies flag is true, alert user and invert masks
     if param['track_outies'] and np.sum([not m is None for m in masks])>0:
         if chatter:
-            print('Inverting masks to track zero-valued pixels.')
+            print('[BB] -- Inverting masks to track zero-valued pixels.')
         masks = [1*(m == 0) if (not m is None) else None for m in masks]
     
     # create HP inputs

@@ -82,9 +82,14 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
         param = load_parameters(parameter_filename,param_types) # load old parameters
         old_epochs = param['train_epochs']
         
+
         #Adjust loaded (old) parameters to match any input (new) parameters
         for key,value in param_input.items():
-            param[key] = value
+            if key == 's_half' or key == 'scales' or key == 'scalefactor' or key == 'track_outies' or key == 'images_to_grayscale' or key=='neural_network_id':
+                if not param[key] == value:
+                    raise Exception("[BB ERROR] Input parameter "+key+" does not match previous network's value. Correct base_parameters.txt")
+            else:
+                param[key] = value
             
         num_epochs = param_input['train_epochs'] # must have specified this value in new input
 
@@ -284,23 +289,20 @@ def BBHP(filepath,param,train_img_count=-1,test_img_count=-1,want_train=None, wa
         results['train_right'] = np.sum(np.diag(train_true_pred_seg))
         results['train_total'] = np.sum(train_true_pred_seg)
 
-
-
-        results['train_innie_f1_preseg'] = train_f1s[1]
-        results['train_outie_f1_preseg'] = train_f1s[0]
-        results['test_innie_f1_preseg'] = test_f1s[1]
-        results['test_outie_f1_preseg'] = test_f1s[0] 
         results['train_innie_f1'] = train_f1s_seg[1]
         results['train_outie_f1'] = train_f1s_seg[0]
         results['test_innie_f1'] = test_f1s_seg[1]
         results['test_outie_f1'] = test_f1s_seg[0] 
         
-        
-
-        results['train_SEG'] = np.mean(train_SEG)
-        results['test_SEG'] = np.mean(test_SEG)
-        results['train_area_weighted_SEG'] = np.mean(np.array(train_SEG)*np.array(train_areas))/np.mean(train_areas)
-        results['test_area_weighted_SEG'] = np.mean(np.array(test_SEG)*np.array(test_areas))/np.mean(test_areas)
+        if param['output_segmented']:
+            results['train_SEG'] = np.mean(train_SEG)
+            results['test_SEG'] = np.mean(test_SEG)
+            results['train_area_weighted_SEG'] = np.mean(np.array(train_SEG)*np.array(train_areas))/np.mean(train_areas)
+            results['test_area_weighted_SEG'] = np.mean(np.array(test_SEG)*np.array(test_areas))/np.mean(test_areas)
+            results['train_innie_f1_preseg'] = train_f1s[1]
+            results['train_outie_f1_preseg'] = train_f1s[0]
+            results['test_innie_f1_preseg'] = test_f1s[1]
+            results['test_outie_f1_preseg'] = test_f1s[0] 
 
        
         for key in results:
