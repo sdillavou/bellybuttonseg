@@ -162,17 +162,27 @@ def load_image(filepath, binarize = False, integerize = False, RGB_to_gray = Fal
     return img
 
 
-# find masks from filenames mask_names with matching names (ignore file extension) to the image filenames in img_names
+# find masks from filenames mask_names with matching names (ignore file extension and letter case) to the image filenames in img_names
 # return a list of mask names that match, in the same order as img_names 
-def find_matching_masks(img_names, mask_names, raise_issues=True):
+# if use_default is selected and a mask (aoi) is present with the base name "default", then it will be used when no match is found
+def find_matching_masks(img_names, mask_names, raise_issues=True,use_default=False):
      
-    img_name_bases = [name[:name.index('.')] for name in img_names]
-    mask_name_bases = [name[:name.index('.')] for name in mask_names]
-    mask_idxs = [mask_name_bases.index(img_name) if img_name in mask_name_bases else None for img_name in img_name_bases]
+    img_name_bases = [name[:name.index('.')].lower() for name in img_names]
+    mask_name_bases = [name[:name.index('.')].lower() for name in mask_names]
+
+    defaultstr = 'default'
+
+    if use_default and (defaultstr in mask_name_bases): # use the mask/aoi specified as default when none is found
+        defaultidx = mask_name_bases.index(defaultstr)
+    else:
+        defaultidx = None
+
+    mask_idxs = [mask_name_bases.index(img_name) if img_name in mask_name_bases else defaultidx for img_name in img_name_bases]
     
     if raise_issues and None in mask_idxs:
         raise Exception('Masks are missing for the following images: '+', '.join([name for name, idx in zip(img_names,mask_idxs) if idx is None]))
     
+
     return [mask_names[k] if not k is None else None for k in mask_idxs] 
     
 
@@ -227,26 +237,26 @@ def load_image_list(folder, names, binarize = False, integerize = False, RGB_to_
                           for name in names2] 
 
 
-def load_images_aois_masks(param,img_folder,AOI_folder,mask_folder=None):
-    #Find image list
-    img_names, imgs = get_image_list(img_folder, RGB_to_gray = param['images_to_grayscale'])
-    
-    #If there are AOI's, load them
-    #if aoi_folder!=None:
-    AOI_names = os.listdir(AOI_folder)
-    AOI_names = find_matching_masks(img_names, AOI_names, raise_issues=False)
-    _, AOIs = get_image_list(AOI_folder, AOI_names, integerize = True)
-    AOIs = [elem if (not elem is None) else np.ones(np.shape(imgs[k])[:2]) for k,elem in enumerate(AOIs)]
-    
-    #If there are masks, load them
-    if mask_folder!=None:
-        mask_names = os.listdir(mask_folder)
-        mask_names = find_matching_masks(img_names, mask_names)
-        _, masks = get_image_list(mask_folder,mask_names, integerize = True)
-    else:
-        mask_names, masks = [],[]
-    
-    return img_names,imgs,AOI_names,AOIs,mask_names,masks
+#def load_images_aois_masks(param,img_folder,AOI_folder,mask_folder=None):
+#    #Find image list
+#    img_names, imgs = get_image_list(img_folder, RGB_to_gray = param['images_to_grayscale'])
+#    
+#    #If there are AOI's, load them
+#    #if aoi_folder!=None:
+#    AOI_names = os.listdir(AOI_folder)
+#    AOI_names = find_matching_masks(img_names, AOI_names, raise_issues=False,use_default=True)
+#    _, AOIs = get_image_list(AOI_folder, AOI_names, integerize = True)
+#    AOIs = [elem if (not elem is None) else np.ones(np.shape(imgs[k])[:2]) for k,elem in enumerate(AOIs)]
+#    
+#    #If there are masks, load them
+#    if mask_folder!=None:
+#        mask_names = os.listdir(mask_folder)
+#        mask_names = find_matching_masks(img_names, mask_names)
+#        _, masks = get_image_list(mask_folder,mask_names, integerize = True)
+#    else:
+#        mask_names, masks = [],[]
+#    
+#    return img_names,imgs,AOI_names,AOIs,mask_names,masks
 
 
 

@@ -70,7 +70,7 @@ def CreateGenerator(filepath, subfolder, param, want=None, count=-1, train_test_
         
     # look for AOIs, load them (allow only 1's and 0's)
     AOI_folder = filepath+'areas_of_interest'
-    AOI_names = find_matching_masks(img_names, get_image_list(AOI_folder), raise_issues=False)
+    AOI_names = find_matching_masks(img_names, get_image_list(AOI_folder), raise_issues=False,use_default=True)
     AOIs = load_image_list(AOI_folder, AOI_names, binarize=True)  
     
     # for all non-defined AOIs, assume entire image is fair game
