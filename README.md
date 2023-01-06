@@ -75,6 +75,10 @@ Connected disks of plastic that visualize internal forces in the material. Inclu
 A hexagonal pattern of clear (also photoelastic) plastic slowly being fractured, changing its structure. In this example there is only one 'region,' the material, but its shape is the desired output. Therefore the selected outputs for this dataset are a binarized innie vs outie image and also distance from the edge of the material.
 ``` python3 -m bellybuttonseg.example2 ```
 
+###### Spacefoam
+[Bubbles in microgravity!](https://arxiv.org/abs/2209.03464) Lighting, focus, bubble size, and other factors all change in this dataset. The default training amount may take a while, but try it for smaller fraction and/or fewer epochs to get a sense of how fast Bellybutton converges. (You can add additional training epochs if training wasn't long enough, see section on "Adding Epochs" below). This was the dataset that inspired the Bellybutton package.
+``` python3 -m bellybuttonseg.example3 ```
+
 
 ### How to Create Your Own Dataset
 To train (and test) Bellybutton, the user must provide images and segmented masks of example data, and (optionally) areas of interest for each image. Bellybutton will learn from these examples and be able to extrapolate to new data. 

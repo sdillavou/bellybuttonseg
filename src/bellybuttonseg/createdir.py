@@ -63,7 +63,7 @@ def createdir(example=0):
        
     elif example == 2:
         folder_name = 'Honeycomb'
-        
+
     elif example == 3:
         folder_name = 'Spacefoam'
 
@@ -170,17 +170,17 @@ def createdir(example=0):
          # Areas of interest (only default)
         download_image(PEurl+"areas_of_interest/default.png", full_filename+'/areas_of_interest/default.png')
              
-        for num in ['100','400','550','850','1150','1630']
+        for num in ['100','400','550','850','1150','1630']:
 
             # Masks
-            download_image(PEurl+"masks/img"+num+".png", full_filename+'/masks/img'+num+'.png')
+            download_image(PEurl+"masks/img_"+num+".png", full_filename+'/masks/img_'+num+'.png')
 
             if num == '400' or num == '850' or num == '1390':
                 # Test Images
-                download_image(PEurl+"images/img"+num+".png", full_filename+'/test_images/img'+num+'.png')
+                download_image(PEurl+"images/img_"+num+".png", full_filename+'/test_images/img_'+num+'.png')
             else:
                 # Train Images
-                download_image(PEurl+"images/img"+num+".png", full_filename+'/train_images/img'+num+'.png')
+                download_image(PEurl+"images/img_"+num+".png", full_filename+'/train_images/img_'+num+'.png')
             
         param['scalefactor'] = 3
 
