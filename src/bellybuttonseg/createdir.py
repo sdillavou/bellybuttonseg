@@ -183,7 +183,7 @@ def createdir(example=0):
                 download_image(PEurl+"images/img_"+num+".png", full_filename+'/train_images/img_'+num+'.png')
             
         param['scalefactor'] = 3
-
+        param['train_epochs'] = 1
 
     save_parameters(full_filename+'/'+base_param_name,list(param.keys()),list(param.values()))
    
