@@ -112,7 +112,7 @@ def load_image(filepath, binarize = False, integerize = False, RGB_to_gray = Fal
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         elif len(np.shape(img))>=3:
             print('Error for: '+filepath)
-            raise Exception('Attempted to convert to grayscale but image is wrong dimensions')
+            raise Exception('Attempted to convert to grayscale but image has more than 3 color channels or a 4th dimension')
         
     # convert all non-zero values to 1's
     if binarize:
