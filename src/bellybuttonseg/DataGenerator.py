@@ -70,7 +70,7 @@ def CreateGenerator(filepath, subfolder, param, want=None, count=-1, train_test_
         
     # look for AOIs, load them (allow only 1's and 0's)
     AOI_folder = filepath+'areas_of_interest'
-    AOI_names = find_matching_masks(img_names, get_image_list(AOI_folder), raise_issues=False)
+    AOI_names = find_matching_masks(img_names, get_image_list(AOI_folder), raise_issues=False,use_default=True)
     AOIs = load_image_list(AOI_folder, AOI_names, binarize=True)  
     
     # for all non-defined AOIs, assume entire image is fair game
@@ -83,7 +83,7 @@ def CreateGenerator(filepath, subfolder, param, want=None, count=-1, train_test_
     
     # Enforce specified fraction of data if training set
     if train_test_predict == 0:
-        AOIs = fractionalize_AOI(masks, AOIs, param['fraction'])
+        AOIs = fractionalize_AOI(masks, AOIs, param['fraction'],param['balance_classes'])
 
         
     # if there are masks and track_outies flag is true, alert user and invert masks
@@ -669,22 +669,33 @@ def dilate_and_ID_mask(eroded_mask,neighborhood_radius=def_neighborhood_radius):
     
 
 
-def fractionalize_AOI(masks, AOIs, fraction):
+def fractionalize_AOI(masks, AOIs, fraction,balance_classes):
 
     train_innie,train_total = 0,0
     
     for k,AOI_dummy in enumerate(AOIs):
         train_innie += np.sum((masks[k]>0)*AOI_dummy)
         train_total += np.sum(AOI_dummy)
-        
-    train_innie_frac = train_innie/train_total
-    train_delta = [(fraction/2)/(1-train_innie_frac) - 1  ,  (fraction/2)/train_innie_frac - 1] # [0] is outie, [1] is innie
-
-    print('[BB] Balance classes by over/under sampling: innies x',np.round(train_delta[1]+1,2),' outies x',np.round(train_delta[0]+1,2))
     
+    train_outie = train_total-train_innie        
+
+   # train_innie_frac = train_innie/train_total
+   # train_frac = np.array([(fraction/2)/(1-train_innie_frac)   ,  (fraction/2)/train_innie_frac ]) # [0] is outie, [1] is innie. 1 means use all data.
+    
+    datapoints_unbalanced = np.array([train_outie,train_innie])*fraction
+    datapoints_balanced = np.array([1,1])*np.mean(datapoints_unbalanced)
+
+    datapoints_final = balance_classes*datapoints_balanced + (1-balance_classes)*datapoints_unbalanced
+
+    train_frac = datapoints_final/datapoints_unbalanced*fraction
+
+    print('[BB] Balancing innies vs outies ',np.round(balance_classes*100,2),'% (0% = random sampling, 100% = balanced)')
+    print('[BB] Result is innies x',np.round(train_frac[1],2),'~',int(datapoints_final[1]),' datapoints, outies x',np.round(train_frac[0],2),'~',int(datapoints_final[0]),' datapoints.')
+    
+
     for k in range(len(AOIs)):
 
-        train_delta2 = copy.copy(train_delta)
+        train_delta2 = train_frac-1 # fraction above or below using all data
         checkmask = masks[k] > 0
         AOImask = 0*AOIs[k] + 1
 
