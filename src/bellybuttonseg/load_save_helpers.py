@@ -332,6 +332,9 @@ def create_sparse_default_params():
     # This does not affect test set.
     param['fraction'] = 0.3
 
+    # 1: balances the number of innies and outies in the training set. 0: no balancing. fraction: interpolates between the two.
+    param['balance_classes'] = 1
+
     # maximum distance to train into network (dist from nearest outie). 2*dist_max < min particle diameter
     param['dist_max'] = 10;  
 
