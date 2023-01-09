@@ -30,7 +30,7 @@ pip install tensorflow
 
 
 #### 1) Download example dataset.
-Run the following line inYou will be prompted to select a location for files to be saved. 
+Run the following line. You will be prompted to select a location for files to be saved. 
 ```
 python3 -m bellybuttonseg.example1
 ```
