@@ -4,8 +4,17 @@ Bellybutton is a machine-learning-based image segmentation package, designed for
 This package uses a convolutional neural network, trained on images and paired user-generated masks, and outputs individually ID'd regions.
 Using the package requires no writing code; by editing a text file, users can edit hyper-parameters, modify data augmentation (e.g. rotate images), specify outputs and filetypes, and run training and prediction.
 
+This readme includes:
+(A) Quickstart guide with example datasets (run Bellybutton in a few commands).
+(B) How to create and train on your own dataset
+(C) Adjustable parameters for the algorithm
 
-## Quickstart guide
+If you use our package, please cite it as "Bellybutton Image Segmentation Package" and link to this page.
+Full author list for Bellybutton project: Sam Dillavou, Jesse Hanlan, Anthony Chieco, Hongyi Xiao, and Douglas J Durian.
+
+
+
+## (A) Quickstart guide
 
 Text in ``` this formatting ``` is meant to be entered line by line in the command line / terminal.
 
@@ -80,7 +89,7 @@ A hexagonal pattern of clear (also photoelastic) plastic slowly being fractured,
 ``` python3 -m bellybuttonseg.example3 ```
 
 
-### How to Create Your Own Dataset
+## (B) How to Create Your Own Dataset
 To train (and test) Bellybutton, the user must provide images and segmented masks of example data, and (optionally) areas of interest for each image. Bellybutton will learn from these examples and be able to extrapolate to new data. 
 
 ##### Images (Data)
@@ -88,6 +97,8 @@ Images may be of varying size and format. Images placed in train_images/ will be
 
 ##### Masks (Labels)
 Masks must be image (or text) files with the same height and width as the training or testing images they correspond to. Masks for all three image folders are put into the single 'masks/' folder. They must have identical file names (excluding extension) to the images they correspond to (e.g. to pair with train_images/img_001.png, any of masks/img_001.png or masks/img_001.tif or masks/img_001.txt will work, but masks/img_001_mask.png would not). When loading these masks, Bellybutton will find contiguous regions of identical pixel values (e.g. an island of pixel value 17) and consider each such island an individual region. Any pixels with value 0 will be considered 'outies' -- not inside a desired segmentation (such as the background). Note that two separated blobs of the same value will be split into distinct regions -- Bellybutton only evaluates contiguous segments. Therefore, if none of your desired segmentations are in contact with one another, simply labeling all pixels inside a desired region as 1 and all outside as 0 will be sufficient, Bellybutton will treat them as individual regions for you. You do not need to use the same numbering convention from mask to mask, and as long as corresponding masks and images (and areas of interest, see below) are the same size as each other, your data may include images of varying size.
+
+For making masks we suggest your favorite programming language, or directly decorating an image of data using image-editing tools like [Fiji](https://imagej.net/software/fiji/) (e.g. copy the image, paint over desired regions with unique values, zero the rest of the values).
 
 ##### Areas of Interest
 AOI's are optional, and if no matching AOI is present, every pixel of an image will be considered in the area of interest. If included, AOI's must be image (or text) files with the same height and width as the training, testing, or prediction images they correspond to. When loaded, any pixels with non-zero value will be considered relevant (used for training, testing, and/or predicting), and all pixels with value 0 will not. Note that the AOI does not crop the image, but merely specifies which pixels should be evaluated as inside or outside a region. When training or predicting, Bellybutton will use a square patch around the pixel in question to determine its innie or outie status, and this patch may extend beyond the AOI. If it would extend beyond the boundary of the image, Bellybutton fills that extra space with black pixels.
@@ -107,7 +118,7 @@ When the code line above is run, you will be prompted to select a location and t
 #### 2) Move your data into the newly created folders
 To run bellybutton, the images, masks, and (optionally) areas of interest must be moved into the appropriate folders created in this new directory. Remember that images in train_images/ and test_images/ must have corresponding masks.
 
-#### 3) Edit  parameters
+#### 3) Edit parameters (optional)
 The configuration of the Bellybutton algorithm is specified using the text file 'parameters.txt' which was automatically generated with default values inside the base folder. A detailed list of parameters is below. These parameters control the input data augmentation, the number of datapoints (pixels) used, the output types, the number of training epochs, etc.
 
 #### 4) Train Bellybutton on your data.
@@ -138,7 +149,7 @@ Note that certain parameters should not be changed, namely s_half, scales, scale
 Enjoy!
 
 
-### Adjustable Parameters
+## (C) Adjustable Parameters
 
 There are a handful of hyper-parameters that adjust how Bellybutton runs. However, it has sufficient flexibility to be insensitive to many changes in these values. The values that are most likely to require modification are listed first, and explained as follows.
 
