@@ -1,8 +1,6 @@
 # Bellybutton Image Segmentation (bellybuttonseg)
 
-Bellybutton is a machine-learning-based image segmentation package, designed for ease of use.
-This package uses a convolutional neural network, trained on images and paired user-generated masks, and outputs individually ID'd regions.
-Using the package requires no writing code; by editing a text file, users can edit hyper-parameters, modify data augmentation (e.g. rotate images), specify outputs and filetypes, and run training and prediction.
+Bellybutton is a machine-learning-based image segmentation package, designed for ease of use. It uses a convolutional neural network, trained on images and paired user-generated masks, to classify pixels as "innies" or "outies" (inside or outside of a segmented region), and uses watershedding to group these results into individually ID'd regions. Using the package requires no further coding: by editing a text file, users can edit hyper-parameters, modify data augmentation (e.g. rotate images), specify outputs and filetypes, and run training and prediction.
 
 This readme includes:
 (A) Quickstart guide with example datasets (run Bellybutton in a few commands).
