@@ -10,10 +10,12 @@ import requests
 base_param_name = 'base_parameters'
 
 # Shell function to run the training and/or prediction using Bellybutton
-def runBB(train=True, predict=False):
+def runBB(train=True, predict=False, file_path=None):
     
     
-    file_path = get_filepath()
+    if file_path is None:
+        file_path = get_filepath()
+        
     dt_string = None
     predict_path = None
    

@@ -7,13 +7,13 @@ from BBHP_function import param_types, BBHP
 
 base_param_name = 'base_parameters'
 
-def runBB():
-    
-    
-    file_path = get_filepath()
-    param = load_parameters(file_path+base_param_name,param_types)
-
-    BBHP(file_path,param)#, train_img_count = train_img_count)#,dt_string='22_06_06_20_44_28');#,train_img_count=train_img_count,test_img_count=test_img_count,dt_string=dt_string)
+#def runBB():
+#    
+#    
+#    file_path = get_filepath()
+#    param = load_parameters(file_path+base_param_name,param_types)
+#
+#    BBHP(file_path,param)#, train_img_count = train_img_count)#,dt_string='22_06_06_20_44_28');#,train_img_count=train_img_count,test_img_count=test_img_count,dt_string=dt_string)
 
 
 # returns images of a list of filenames for a given folder
