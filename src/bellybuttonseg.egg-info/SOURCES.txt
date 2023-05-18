@@ -6,6 +6,8 @@ src/bellybuttonseg/DataGenerator.py
 src/bellybuttonseg/__init__.py
 src/bellybuttonseg/createdir.py
 src/bellybuttonseg/example1.py
+src/bellybuttonseg/example2.py
+src/bellybuttonseg/example3.py
 src/bellybuttonseg/generate_network.py
 src/bellybuttonseg/load_save_helpers.py
 src/bellybuttonseg/newproject.py

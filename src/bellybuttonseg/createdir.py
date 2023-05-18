@@ -6,16 +6,16 @@ from load_save_helpers import create_sparse_default_params, save_parameters, loa
 from BBHP_function import param_types, BBHP
 from PIL import Image
 import requests 
-
+from BBHP_function import param_types
 base_param_name = 'base_parameters'
 
 # Shell function to run the training and/or prediction using Bellybutton
-def runBB(train=True, predict=False, file_path=None):
+def runBB(train=True, predict=False, file_path=None, override_param=None):
     
     
     if file_path is None:
         file_path = get_filepath()
-        
+
     dt_string = None
     predict_path = None
    
@@ -27,6 +27,13 @@ def runBB(train=True, predict=False, file_path=None):
         file_path = file_path[:idx+1]
 
     param = load_parameters(file_path+base_param_name,param_types)
+
+    #Adjust loaded (old) parameters to match any input (new) parameters
+    if not override_param is None:
+        for key,value in override_param.items():
+            param[key] = param_types[key](value)
+
+            
 
     if not (dt_string is None):
         del param['dim3']

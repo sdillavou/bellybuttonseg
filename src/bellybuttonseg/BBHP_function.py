@@ -22,13 +22,13 @@ include_test_in_training = False
 
 physical_devices = tf.config.list_physical_devices('GPU') 
 
-if len(physical_devices):
+#if len(physical_devices):
     #print('LIMITING TO 1 GPU')
-    tf.config.set_visible_devices(physical_devices[-1:], 'GPU')
+#    tf.config.set_visible_devices(physical_devices[-1:], 'GPU')
 
-if len(physical_devices):
+#if len(physical_devices):
    # print('SETTING MEMORY GROWTH ON GPU TO TRUE')
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+#    tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 ####### END OF HEADER #################################################################
 
