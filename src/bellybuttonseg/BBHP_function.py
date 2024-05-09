@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.getcwd())) # Add parent directory to sys.path
 # round results (e.g. accuracy) to this many decimal places
 round_out = 5
 
-# remove test set from fit function. Speeds up training, loses mid-training updates 
+# if false, test set is not evaluated during training, which speeds the process but loses mid-training updates 
 include_test_in_training = False
 
 

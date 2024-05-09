@@ -197,7 +197,7 @@ def createdir(example=0,file_path=None):
     save_parameters(full_filename+'/'+base_param_name,list(param.keys()),list(param.values()))
    
     print('Created and populated '+full_filename)
-
+    return full_filename
     
 def get_filepath():
     # request filepath from user

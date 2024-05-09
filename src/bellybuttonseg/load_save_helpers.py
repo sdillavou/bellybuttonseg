@@ -303,7 +303,7 @@ def create_default_params():
     param = create_sparse_default_params()
 
    
-    param['neural_network_id'] = 1; # For a list of what networks these numbers create, see readme.
+    param['neural_network_id'] = 1; # Only one network natively supported in this version
    
     # optional values for spatially weighting pixels near borders of particles/images
     param['border_radius'] = 1 # neighborhood of relevance for weighting
