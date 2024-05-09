@@ -7,8 +7,8 @@ This readme includes:
 (B) How to create and train on your own dataset
 (C) Adjustable parameters for the algorithm
 
-If you use our package, please cite it as "Bellybutton Image Segmentation Package" and link to this page.
-Full author list for Bellybutton project: Sam Dillavou, Jesse Hanlan, Anthony Chieco, Hongyi Xiao, and Douglas J Durian.
+To cite our package, please refer to the manuscript [Bellybutton: Accessible and Customizable Deep-Learning Image Segmentation](https://arxiv.org/abs/2309.00058).
+Full author list for Bellybutton project: Sam Dillavou, Jesse M Hanlan, Anthony T Chieco, Hongyi Xiao, Sage Fulco, Kevin T Turner, and Douglas J Durian.
 
 
 

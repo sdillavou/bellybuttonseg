@@ -61,10 +61,11 @@ def runBB(train=True, predict=False, file_path=None, override_param=None):
     print('[BB] Task Completed Successfully.')
 
 # returns images of a list of filenames for a given folder
-def createdir(example=0):
+def createdir(example=0,file_path=None):
     
     # request filepath from user
-    file_path = get_filepath()
+    if file_path is None:
+        file_path = get_filepath()
 
     # if pre-loaded example, images, masks, etc will be added
     if example == 1:
@@ -77,7 +78,7 @@ def createdir(example=0):
         folder_name = 'Spacefoam'
 
     elif not example == 0:
-        print('[BB] Bad input, no such example #'+example+'.')
+        print('[BB] Bad input, no such example #',example)
         return
     
     else: # example == 0

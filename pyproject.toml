@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bellybuttonseg"
-version = "0.0.28"
+version = "0.0.29"
 authors = [
   { name="Sam Dillavou", email="sam.dillavou@gmail.com" },
   { name="Jesse Hanlan", email="jhanlan@sas.upenn.edu " },
