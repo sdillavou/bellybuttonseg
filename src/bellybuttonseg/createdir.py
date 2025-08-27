@@ -1,12 +1,10 @@
 import tkinter as tk
 from tkinter import filedialog
-import io,os,sys,shutil
+import io,os,sys,shutil, argparse, requests
 sys.path.append(os.path.dirname(__file__))
 from load_save_helpers import create_sparse_default_params, save_parameters, load_parameters
 from BBHP_function import param_types, BBHP
 from PIL import Image
-import requests 
-from BBHP_function import param_types
 base_param_name = 'base_parameters'
 
 # Shell function to run the training and/or prediction using Bellybutton
@@ -61,7 +59,7 @@ def runBB(train=True, predict=False, file_path=None, override_param=None):
     print('[BB] Task Completed Successfully.')
 
 # returns images of a list of filenames for a given folder
-def createdir(example=0,file_path=None):
+def createdir(example=0,file_path=None,folder_name=None):
     
     # request filepath from user
     if file_path is None:
@@ -69,25 +67,29 @@ def createdir(example=0,file_path=None):
 
     # if pre-loaded example, images, masks, etc will be added
     if example == 1:
-        folder_name = 'PhotoelasticDisks'
+        if folder_name is None:
+            folder_name = 'PhotoelasticDisks'
        
     elif example == 2:
-        folder_name = 'Honeycomb'
+        if folder_name is None:
+            folder_name = 'Honeycomb'
 
     elif example == 3:
-        folder_name = 'Spacefoam'
+        if folder_name is None:
+            folder_name = 'Spacefoam'
 
     elif not example == 0:
         print('[BB] Bad input, no such example #',example)
         return
     
     else: # example == 0
-        folder_name = input('[INPUT] Enter folder name for new project: ')
+        if folder_name is None:
+            folder_name = input('[INPUT] Enter folder name for new project: ')
         
         
     full_filename = file_path+folder_name
     if os.path.isdir(full_filename):
-        print('[BB] Desired new folder already exists! Nohting has been changed.')
+        print('[BB] Desired new folder already exists! Nothing has been changed.')
         return
    
     
@@ -214,3 +216,48 @@ def download_image(url, image_file_path):
 
     with Image.open(io.BytesIO(r.content)) as im:
         im.save(image_file_path)
+
+
+def parse_bellybuttonseg_args(description):
+    """
+    Parse command line arguments for BellyButton segmentation scripts.
+    Always supports --directory, --full-path, and --folder-name options.
+    
+    Args:
+        description (str): Description for the argument parser
+    
+    Returns:
+        dict: Parsed arguments with normalized paths, or None if error
+    """
+    parser = argparse.ArgumentParser(description=description)
+    
+    # Create mutually exclusive group for directory specification
+    path_group = parser.add_mutually_exclusive_group()
+    path_group.add_argument('--directory', default=None, help='Directory where the project will be created/processed (will open GUI dialog if not provided)')
+    path_group.add_argument('--full-path', default=None, help='Full path including directory and project folder name (e.g., /path/to/parent/MyProject)')
+    
+    parser.add_argument('--folder-name', default=None, help='Name of the project folder (optional - will prompt if not provided)')
+    
+    args = parser.parse_args()
+    
+    # Process arguments and normalize paths
+    result = {}
+    
+    if args.full_path:
+        # Handle full-path option with trailing slash normalization
+        normalized_path = args.full_path.rstrip('/\\')
+        result['file_path'] = os.path.dirname(normalized_path)
+        result['folder_name'] = os.path.basename(normalized_path)
+        
+        if not result['folder_name']:  # Safety check
+            print("Error: Invalid full path provided. Please specify a valid path ending with the project folder name.")
+            return None
+            
+        if args.folder_name:
+            print("Warning: --folder-name ignored when using --full-path")
+    else:
+        # Handle directory option
+        result['file_path'] = args.directory
+        result['folder_name'] = args.folder_name
+    
+    return result
