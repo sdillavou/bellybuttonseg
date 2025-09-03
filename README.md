@@ -70,6 +70,19 @@ You may instead train a new network and then segment the images in predict_image
 python3 -m bellybuttonseg.trainandpredict 
 ```
 
+#### Command-Line-Only Version
+
+For users on a cluster or who otherwise want to avoid interactive/GUI functionality, command-line-only use for the above example would be as follows:
+```
+python3 -m bellybuttonseg.example1 --directory /path/to/parent_folder
+python3 -m bellybuttonseg.trainandpredict --directory /path/to/parent_folder/PhotoelasticDisks
+```
+
+Note that using 
+```
+python3 -m bellybuttonseg.trainandpredict --directory /path/to/parent_folder/PhotoelasticDisks/OUTPUTFOLDERNAME
+```
+requires specifying the output folder created during training, which will have a date-based name.
 
 #### A short list of pre-made example datasets:
 
@@ -137,6 +150,26 @@ and select the output folder for the network you just trained. Voila!
 python3 -m bellybuttonseg.trainandpredict 
 ```
 Select the base folder, and Bellybutton will create a new output folder, train, and then predict on predict_images/ files.
+
+
+#### Command-Line-Only Version
+
+```
+python3 -m bellybuttonseg.newproject --directory /path/to/parent --folder-name MyCustomProject
+python3 -m bellybuttonseg.trainandpredict --directory /path/to/parent/MyCustomProject
+```
+or alternatively
+```
+python3 -m bellybuttonseg.newproject --full-path /path/to/parent/MyCustomProject
+python3 -m bellybuttonseg.trainandpredict --directory /path/to/parent/MyCustomProject
+```
+Note that if you do not specify the directory or folder name (or both using ```--full-path```), the system will prompt you for the remaining information.
+
+Like the example above, note that using 
+```
+python3 -m bellybuttonseg.trainandpredict --directory /path/to/parent_folder/MyCustomProject/OUTPUTFOLDERNAME
+```
+requires specifying the output folder created during training, which will have a date-based name.
 
 #### Adding Epochs
 
